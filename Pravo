@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета-заявление — НССД</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1f3a7a;
+    --accent-yellow: #ffb700; 
+    --bg: #f3f4f6; 
+    --white: #ffffff;
+    --text: #1a1a2e; 
+    --text-muted: #6b7280;
+    --border: #d1d8f0; 
+    --card-shadow: 0 4px 16px rgba(23, 37, 84, 0.08);
+    --error-color: #dc2626;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 60px; }
+
+  /* --- HEDER --- */
+  .hero { 
+    background: var(--navy); 
+    padding: 40px 20px 50px; 
+    text-align: center; 
+    position: relative; 
+    overflow: hidden; 
+  }
+  
+  .hero-stripes {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 45%;
+    min-width: 200px;
+    max-width: 500px;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .stripe {
+    position: absolute;
+    height: 200%;
+    top: -50%;
+    right: -20%;
+    transform-origin: top right;
+    transform: rotate(-35deg);
+  }
+  .stripe-white-1 { width: 80%; background: var(--white); right: 0; }
+  .stripe-yellow { width: 90%; background: var(--accent-yellow); right: -30%; }
+  .stripe-white-2 { width: 70%; background: var(--white); right: -45%; }
+
+  .logo-wrap { 
+    position: relative; z-index: 2;
+    display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.08); padding: 10px 20px 10px; border-radius: 12px; border:1px solid rgba(255,255,255,0.15);
+    margin-bottom: 16px;
+  }
+  
+  .logo-svg { height: 34px; width: auto; display: block; }
+  .logo-text { 
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 700; 
+    font-size: 10px; 
+    color: var(--white); 
+    letter-spacing: 1.2px; 
+    opacity: 0.9;
+    white-space: nowrap;
+  }
+
+  .hero h1 { 
+    font-family:'Montserrat',sans-serif; font-size:clamp(22px,5vw,32px); font-weight:800; 
+    color:var(--white); line-height:1.2; margin-bottom:12px; position:relative; z-index:2; 
+  }
+  .hero-sub { 
+    font-size:14px; color:rgba(255,255,255,0.85); max-width:480px; margin:0 auto; 
+    line-height:1.6; position:relative; z-index:2; 
+  }
+  .trust-bar { display:flex; justify-content:center; gap:24px; margin-top:24px; flex-wrap:wrap; position:relative; z-index:2; }
+  .trust-item { display:flex; align-items:center; gap:7px; font-size:12px; color:rgba(255,255,255,0.9); font-weight:500; }
+  .trust-dot { width:7px; height:7px; border-radius:50%; background:var(--accent-yellow); flex-shrink:0; }
+
+  /* --- Прогресс бар --- */
+  .progress-wrap { background:var(--white); padding:16px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
+  .progress-info { display:flex; justify-content:space-between; align-items:center; max-width:680px; margin:0 auto 8px; font-size:12px; color:var(--text-muted); }
+  .progress-label { font-weight:600; color:var(--navy); }
+  .progress-bar-bg { max-width:680px; margin:0 auto; height:5px; background:var(--border); border-radius:10px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:var(--navy); border-radius:10px; transition:width 0.4s ease; width:0%; }
+
+  .container { max-width:680px; margin:0 auto; padding:0 16px; position: relative; z-index: 2; }
+  
+  /* --- Секции формы --- */
+  .section { margin-top:32px; }
+  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; position:relative; }
+  
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 40px;
+    height: 4px;
+    background: var(--accent-yellow);
+    border-radius: 4px;
+  }
+
+  .section-icon { width:36px; height:36px; border-radius:10px; background:var(--navy); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-icon svg { width:18px; height:18px; fill:none; stroke:white; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .section-title { font-family:'Montserrat',sans-serif; font-size:16px; font-weight:700; color:var(--navy); letter-spacing:0.3px; margin-top: 4px;}
+  .card { background:var(--white); border-radius:16px; padding:24px; box-shadow:var(--card-shadow); border:1px solid rgba(209,216,240,0.5); display:flex; flex-direction:column; gap:18px; }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field-label { font-size:13px; font-weight:600; color:var(--navy); display:flex; align-items:center; gap:4px; }
+  .req { color:var(--error-color); font-size:14px; }
+  
+  /* Поля ввода с валидацией */
+  .field-input { 
+    border:1.5px solid var(--border); border-radius:10px; padding:11px 14px; font-size:14px; font-family:'Inter',sans-serif; color:var(--text); background:var(--white); transition:border-color 0.2s,box-shadow 0.2s; outline:none; width:100%; 
+  }
+  .field-input:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(23,37,84,0.08); }
+  .field-input:invalid:not(:placeholder-shown) { border-color: var(--error-color); }
+  
+  .field-error { font-size:11px; color:var(--error-color); display:none; margin-top: 3px;}
+  .field-input:invalid:not(:placeholder-shown) ~ .field-error { display:block; }
+  
+  /* Кастомные чекбоксы / радио */
+  .radio-group, .checkbox-group { display:flex; flex-direction:column; gap:8px; }
+  .radio-label, .checkbox-label { display:flex; align-items:center; gap:10px; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; transition:all 0.2s; font-size:14px; color:var(--text); user-select:none; }
+  .radio-label:hover, .checkbox-label:hover { border-color:var(--navy); background:rgba(23,37,84,0.02); }
+  .radio-label input, .checkbox-label input { display:none; }
+  .radio-label.selected, .checkbox-label.selected { border-color:var(--navy); background:rgba(23,37,84,0.04); color:var(--navy); font-weight:500; }
+  .radio-custom, .checkbox-custom { width:18px; height:18px; border:2px solid var(--border); flex-shrink:0; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+  .radio-custom { border-radius:50%; }
+  .checkbox-custom { border-radius:5px; }
+  .radio-label.selected .radio-custom { border-color:var(--navy); background:var(--navy); box-shadow:inset 0 0 0 3px white; }
+  .checkbox-label.selected .checkbox-custom { border-color:var(--navy); background:var(--navy); }
+  .checkbox-label.selected .checkbox-custom::after { content:''; display:block; width:9px; height:5px; border-left:2px solid white; border-bottom:2px solid white; transform:rotate(-45deg) translateY(-1px); }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:480px) { .field-row { grid-template-columns:1fr; } }
+
+  /* Отзывы */
+  .reviews-block { margin-top:32px; }
+  .reviews-header { display:flex; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+  .ya-badge { background:#FC3F1D; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.5px; }
+  .reviews-meta { font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+  .stars { color:#f59e0b; font-size:13px; letter-spacing:1px; }
+  .reviews-sub { font-size:12px; color:var(--text-muted); margin-bottom:12px; }
+  .reviews-scroll { display:flex; gap:14px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+  .reviews-scroll::-webkit-scrollbar { height:4px; }
+  .reviews-scroll::-webkit-scrollbar-track { background:var(--border); border-radius:10px; }
+  .reviews-scroll::-webkit-scrollbar-thumb { background:var(--navy); border-radius:10px; }
+  .review-card { background:var(--white); border-radius:14px; padding:16px; min-width:270px; max-width:290px; flex-shrink:0; scroll-snap-align:start; box-shadow:var(--card-shadow); border:1px solid rgba(209,216,240,0.5); position:relative; }
+  .review-top { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .review-avatar { width:36px; height:36px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:white; flex-shrink:0; }
+  .review-name { font-size:13px; font-weight:600; color:var(--navy); line-height:1.3; }
+  .review-date { font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .review-stars { color:#f59e0b; font-size:11px; letter-spacing:1px; margin-bottom:4px; }
+  .review-text { font-size:13px; color:var(--text); line-height:1.6; }
+  .review-result { display:inline-block; margin-top:8px; background:#E1F5EE; color:#085041; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; }
+
+  /* Кнопка отправки */
+  .submit-wrap { margin-top:32px; padding:24px; background:var(--white); border-radius:16px; box-shadow:var(--card-shadow); border:1px solid rgba(209,216,240,0.5); text-align:center; }
+  .submit-note { font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.6; display:flex; align-items:flex-start; gap:8px; text-align:left; }
+  .submit-note svg { width:16px; height:16px; flex-shrink:0; margin-top:1px; fill:var(--text-muted); }
+  
+  .btn-submit { 
+    width:100%; padding:16px; background:var(--accent-yellow); color:var(--navy); border:none; 
+    border-radius:12px; font-family:'Montserrat',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.5px; 
+    cursor:pointer; transition:all 0.25s; 
+  }
+  .btn-submit:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(251, 191, 36, 0.4); }
+  .btn-submit:active { transform:translateY(0); }
+  .btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+  .btn-inner { display:flex; align-items:center; justify-content:center; gap:10px; }
+  .btn-arrow { transition:transform 0.25s; }
+  .btn-submit:hover .btn-arrow { transform:translateX(4px); }
+  .spinner { width:20px; height:20px; border:2px solid rgba(23,37,84,0.2); border-top-color:var(--navy); border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  
+  .success-screen { display:none; text-align:center; padding:60px 20px; }
+  .success-icon { width:72px; height:72px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; margin:0 auto 20px; animation:pop 0.4s ease; }
+  @keyframes pop { 0%{transform:scale(0.5);opacity:0;} 80%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
+  .success-title { font-family:'Montserrat',sans-serif; font-size:22px; font-weight:700; color:var(--navy); margin-bottom:10px; }
+  .success-text { font-size:14px; color:var(--text-muted); line-height:1.7; max-width:360px; margin:0 auto; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-stripes">
+    <div class="stripe stripe-white-1"></div>
+    <div class="stripe stripe-yellow"></div>
+    <div class="stripe stripe-white-2"></div>
+  </div>
+
+  <div class="logo-wrap">
+    <svg class="logo-svg" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clip-path="url(#clip0_833_6145)">
+        <mask id="mask0_833_6145" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="24">
+          <path d="M120 0H0V24H120V0Z" fill="white"/>
+        </mask>
+        <g mask="url(#mask0_833_6145)">
+          <path d="M4.30396 0.160112C2.93677 0.419834 1.81958 1.12261 1.09302 2.19206C0.671143 2.81081 0.452393 3.32261 0.210205 4.27747C0.0461426 4.91914 0.0461426 5.07956 0.0227051 13.7268L-0.00854492 22.5344H4.17896H8.35863V11.3053V0.0760841L6.50709 0.0837231C5.48365 0.091362 4.49146 0.121918 4.30396 0.160112Z" fill="#ffffff"/>
+          <path d="M19.1406 3.58993V7.10384L15.8438 7.11909L12.5391 7.14203V10.4649V13.7878L15.8438 13.8108L19.1406 13.826V18.1802V22.5344H23.3203H27.5V11.3052V0.0760422H23.3203H19.1406V3.58993Z" fill="#ffffff"/>
+          <path d="M36.1953 0.190856C33.4922 0.672107 32.0156 2.39086 31.7187 5.40821C31.6797 5.81307 31.6406 6.19504 31.6406 6.24848C31.6406 6.32491 34.1641 6.34016 44.1562 6.32491L56.664 6.30197L57.7107 3.66655C58.2889 2.21516 58.8436 0.817243 58.9451 0.549883L59.1327 0.076273L47.9453 0.0839114C39.1328 0.0915503 36.6406 0.114467 36.1953 0.190856Z" fill="#ffffff"/>
+          <path d="M60.289 3.14653C59.6093 4.84236 59.0623 6.24789 59.0623 6.27845C59.0623 6.31664 65.0857 6.33957 72.445 6.33957H85.8201L87.0157 3.3375C87.6637 1.69514 88.2184 0.281945 88.2501 0.205556C88.297 0.083334 87.625 0.075695 74.9061 0.075695H61.5075L60.289 3.14653Z" fill="#ffffff"/>
+          <path d="M90.4053 0.702433C89.2495 3.72743 88.2808 6.28645 88.2808 6.30939C88.2808 6.32464 93.0306 6.33995 98.8277 6.33995H109.375V11.3052V16.2705H104.179H98.9837V13.2149V10.1594H94.8039H90.6246V13.2149V16.2705H89.5304H88.4368V19.4025V22.5344H104.179H119.921V19.4025V16.2705H118.827H117.741L117.71 10.442C117.687 5.23993 117.671 4.56771 117.554 4.12465C116.929 1.81007 115.601 0.580209 113.312 0.190626C112.733 0.09132 111.07 0.0760422 101.64 0.0760422H90.648L90.4053 0.702433Z" fill="#ffffff"/>
+          <path d="M31.657 13.7267C31.6882 17.1031 31.7038 17.3399 31.8601 17.9129C32.407 19.8837 33.8445 21.5031 35.6335 22.1524C36.7117 22.542 36.4538 22.5343 46.7819 22.5343H56.4071V19.4024V16.2705H48.2429H40.0789V13.2149V10.1594H35.8523H31.6257L31.657 13.7267Z" fill="#ffffff"/>
+          <path d="M60.1014 13.8031C60.1249 17.2177 60.1407 17.4927 60.289 18.0045C60.9141 20.1281 62.4529 21.6941 64.531 22.3205L65.1174 22.4962L74.9841 22.5191L84.8438 22.5344V19.4025V16.2705H76.6407H68.4376V13.2149V10.1594H64.2501H60.0703L60.1014 13.8031Z" fill="#ffffff"/>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="clip0_833_6145">
+          <rect width="120" height="32" fill="white"/>
+        </clipPath>
+      </defs>
+    </svg>
+    <span class="logo-text">НАЦИОНАЛЬНАЯ СЛУЖБА СПИСАНИЯ ДОЛГОВ</span>
+  </div>
+  
+  <h1>Анкета-заявление клиента</h1>
+  <p class="hero-sub">Процедура списания / реструктуризации задолженности. Заполните анкету — мы свяжемся с вами и расскажем о дальнейших шагах.</p>
+  <div class="trust-bar">
+    <div class="trust-item"><div class="trust-dot"></div>Более 16 000 завершённых дел</div>
+    <div class="trust-item"><div class="trust-dot"></div>Полностью под ключ</div>
+    <div class="trust-item"><div class="trust-dot"></div>Рейтинг 4,8 на Яндексе</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span class="progress-label" id="progress-label">Начало заполнения</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+</div>
+
+<div class="container" id="form-container">
+<form id="mainForm" novalidate>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Личные данные</div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label class="field-label">ФИО <span class="req">*</span></label>
+        <input type="text" class="field-input" name="fio" placeholder="Иванов Иван Иванович" required>
+        <span class="field-error">Пожалуйста, укажите ФИО</span>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Дата рождения <span class="req">*</span></label>
+          <input type="date" class="field-input" name="dob" required>
+          <span class="field-error">Пожалуйста, укажите дату рождения</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Место рождения <span class="req">*</span></label>
+          <input type="text" class="field-input" name="pob" placeholder="Город / Область" required>
+          <span class="field-error">Укажите место рождения</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Серия и номер паспорта <span class="req">*</span></label>
+          <input type="text" class="field-input" name="passport_num" placeholder="0000 000000" pattern="[0-9]{4} [0-9]{6}" required>
+          <span class="field-error">Формат: 4 цифры, пробел, 6 цифр</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Дата выдачи <span class="req">*</span></label>
+          <input type="date" class="field-input" name="passport_date" required>
+          <span class="field-error">Укажите дату выдачи</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Код подразделения <span class="req">*</span></label>
+          <input type="text" class="field-input" name="passport_code" placeholder="000-000" pattern="[0-9]{3}-[0-9]{3}" required>
+          <span class="field-error">Формат: 3 цифры, тире, 3 цифры</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Номер телефона <span class="req">*</span></label>
+          <input type="tel" class="field-input" name="phone" id="phoneInput" placeholder="+7 (___) ___-__-__" required>
+          <span class="field-error">Укажите номер телефона</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Адрес регистрации <span class="req">*</span></label>
+        <input type="text" class="field-input" name="address" placeholder="Город, улица, дом, квартира" required>
+        <span class="field-error">Укажите адрес регистрации</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Вид процедуры и занятость</div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label class="field-label">Вид процедуры <span class="req">*</span></label>
+        <div class="radio-group" data-name="procedure">
+          <label class="radio-label"><input type="radio" name="procedure" value="Списание задолженности" required><div class="radio-custom"></div>Списание задолженности</label>
+          <label class="radio-label"><input type="radio" name="procedure" value="Реструктуризация задолженности"><div class="radio-custom"></div>Реструктуризация задолженности</label>
+          <label class="radio-label"><input type="radio" name="procedure" value="Мировое соглашение + списание"><div class="radio-custom"></div>Мировое соглашение + списание</label>
+          <label class="radio-label"><input type="radio" name="procedure" value="Мировое соглашение + реструктуризация"><div class="radio-custom"></div>Мировое соглашение + реструктуризация</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Работаете официально? <span class="req">*</span></label>
+        <div class="radio-group" data-name="employed">
+          <label class="radio-label"><input type="radio" name="employed" value="Да" required><div class="radio-custom"></div>Да</label>
+          <label class="radio-label"><input type="radio" name="employed" value="Нет"><div class="radio-custom"></div>Нет</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Сумма дохода (в месяц) <span class="req">*</span></label>
+        <input type="number" class="field-input" name="income" placeholder="Например: 45000" required>
+        <span class="field-error">Укажите суммарный доход</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Долговая нагрузка</div>
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Сумма долга <span class="req">*</span></label>
+          <input type="number" class="field-input" name="debt_amount" placeholder="Например: 2000000" required>
+          <span class="field-error">Укажите сумму долга</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Ежемесячный платёж <span class="req">*</span></label>
+          <input type="number" class="field-input" name="monthly_payment" placeholder="Общий по всем кредитам" required>
+          <span class="field-error">Укажите ежемесячный платёж</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Просрочки по кредитам? <span class="req">*</span></label>
+        <div class="radio-group" data-name="overdue">
+          <label class="radio-label"><input type="radio" name="overdue" value="Да" required><div class="radio-custom"></div>Да</label>
+          <label class="radio-label"><input type="radio" name="overdue" value="Нет"><div class="radio-custom"></div>Нет</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Кредиторы <span class="req">*</span></label>
+        <div class="checkbox-group" data-name="creditors">
+          <label class="checkbox-label"><input type="checkbox" value="Банки" required><div class="checkbox-custom"></div>Банки</label>
+          <label class="checkbox-label"><input type="checkbox" value="Микрозаймы"><div class="checkbox-custom"></div>Микрозаймы (МФО)</label>
+          <label class="checkbox-label"><input type="checkbox" value="Расписки"><div class="checkbox-custom"></div>Расписки</label>
+          <label class="checkbox-label"><input type="checkbox" value="Налоги"><div class="checkbox-custom"></div>Налоги</label>
+          <label class="checkbox-label"><input type="checkbox" value="ЖКХ"><div class="checkbox-custom"></div>ЖКХ</label>
+          <label class="checkbox-label"><input type="checkbox" value="Судебные взыскания"><div class="checkbox-custom"></div>Судебные взыскания</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Аресты и исполнительные производства? <span class="req">*</span></label>
+        <div class="radio-group" data-name="arrests">
+          <label class="radio-label"><input type="radio" name="arrests" value="Да" required><div class="radio-custom"></div>Да</label>
+          <label class="radio-label"><input type="radio" name="arrests" value="Нет"><div class="radio-custom"></div>Нет</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Семья и имущество</div>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label class="field-label">Семейное положение <span class="req">*</span></label>
+        <div class="radio-group" data-name="family">
+          <label class="radio-label"><input type="radio" name="family" value="В браке" required><div class="radio-custom"></div>В браке</label>
+          <label class="radio-label"><input type="radio" name="family" value="В разводе"><div class="radio-custom"></div>В разводе</label>
+          <label class="radio-label"><input type="radio" name="family" value="Холост / Не замужем"><div class="radio-custom"></div>Холост / Не замужем</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Дети на иждивении до 18 лет <span class="req">*</span></label>
+        <div class="checkbox-group" data-name="children">
+          <label class="checkbox-label"><input type="checkbox" value="Нет детей" required><div class="checkbox-custom"></div>Нет детей</label>
+          <label class="checkbox-label"><input type="checkbox" value="Один ребёнок"><div class="checkbox-custom"></div>Один ребёнок</label>
+          <label class="checkbox-label"><input type="checkbox" value="Двое детей"><div class="checkbox-custom"></div>Двое детей</label>
+          <label class="checkbox-label"><input type="checkbox" value="Трое и более (многодетная семья)"><div class="checkbox-custom"></div>Трое и более (многодетная семья)</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Имущество <span class="req">*</span></label>
+        <div class="checkbox-group" data-name="property">
+          <label class="checkbox-label"><input type="checkbox" value="Единственное жильё" required><div class="checkbox-custom"></div>Единственное жильё</label>
+          <label class="checkbox-label"><input type="checkbox" value="Имущества нет"><div class="checkbox-custom"></div>Имущества нет</label>
+          <label class="checkbox-label"><input type="checkbox" value="Есть иное имущество (зем. уч., авто и т.д.)"><div class="checkbox-custom"></div>Есть иное имущество (зем. уч., авто и т.д.)</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Сделки с имуществом за последние 3 года? <span class="req">*</span></label>
+        <div class="radio-group" data-name="transactions">
+          <label class="radio-label"><input type="radio" name="transactions" value="Да" required><div class="radio-custom"></div>Да</label>
+          <label class="radio-label"><input type="radio" name="transactions" value="Нет"><div class="radio-custom"></div>Нет</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Наличие действующего ИП <span class="req">*</span></label>
+        <div class="radio-group" data-name="ip">
+          <label class="radio-label"><input type="radio" name="ip" value="Да" required><div class="radio-custom"></div>Да</label>
+          <label class="radio-label"><input type="radio" name="ip" value="Нет"><div class="radio-custom"></div>Нет</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reviews-block">
+    <div class="reviews-header">
+      <span class="ya-badge">Яндекс</span>
+      <div class="reviews-meta">
+        <span class="stars">★★★★★</span>
+        <span>4,8 · 322 отзыва</span>
+      </div>
+    </div>
+    <div class="reviews-sub">Что говорят клиенты после завершения процедуры</div>
+    <div class="reviews-scroll">
+      <div class="review-card">
+        <div class="review-top"><div class="review-avatar">ОИ</div><div><div class="review-name">Ольга И.</div><div class="review-date">26 апреля 2025</div></div></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Хочу выразить огромную благодарность всем юристам и компании НССД. Обратилась с долгами в 2 млн и была в тупике. Но меня в прямом смысле спасли и я стала свободна. Мое дело длилось 9 месяцев.</div>
+        <span class="review-result">Списано 2 000 000 ₽</span>
+      </div>
+      <div class="review-card">
+        <div class="review-top"><div class="review-avatar">AV</div><div><div class="review-name">avrams</div><div class="review-date">29 апреля 2025</div></div></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Обратился с суммой долга около 1,3 млн рублей. С первого же дня почувствовал отношение настоящих профессионалов. Не кормили пустыми обещаниями — сразу честно объяснили все этапы. Вся задолженность была успешно списана!</div>
+        <span class="review-result">Списано 1 300 000 ₽</span>
+      </div>
+      <div class="review-card">
+        <div class="review-top"><div class="review-avatar">ГБ</div><div><div class="review-name">Глеб Бессмертный</div><div class="review-date">25 марта 2025</div></div></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Какое облегчение когда официально списывают долг! С первого дня юристы взяли ситуацию под контроль и защитили от коллекторов. Работа выполнена строго по договору без скрытых платежей. Начинаю жизнь с чистого листа.</div>
+        <span class="review-result">Списано 600 000 ₽</span>
+      </div>
+      <div class="review-card">
+        <div class="review-top"><div class="review-avatar">АК</div><div><div class="review-name">Александр Касторной</div><div class="review-date">26 апреля 2025</div></div></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Оперативно и бесплатно проконсультировали, помогли списать долг не выходя из дома. Если бы мне кто то сказал что так можно я бы не поверил. Всем рекомендую!</div>
+        <span class="review-result">Долг списан</span>
+      </div>
+      <div class="review-card">
+        <div class="review-top"><div class="review-avatar">НК</div><div><div class="review-name">Никита</div><div class="review-date">27 апреля 2025</div></div></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Очень всё понравилось, списали все долги. Первичную консультацию оказывают юристы — разбирают ситуацию бесплатно и можно в мессенджере. Всё чётко и без лишней суеты.</div>
+        <span class="review-result">Все долги списаны</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-wrap">
+    <div class="submit-note">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Данные передаются по защищённому каналу и используются исключительно для подготовки вашего дела. Мы не передаём информацию третьим лицам.
+    </div>
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <div class="btn-inner">
+        <span id="btnText">Отправить заявку</span>
+        <div class="spinner" id="spinner"></div>
+        <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="btnArrow"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </button>
+  </div>
+</form>
+</div>
+
+<div class="container">
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="success-title">Заявка отправлена!</div>
+    <p class="success-text">Ваша анкета получена. Специалист НССД свяжется с вами в ближайшее время для уточнения деталей и следующих шагов.</p>
+  </div>
+</div>
+
+<script>
+  // НОВАЯ ССЫЛКА НА ВАШУ ТАБЛИЦУ (оригинальная, рабочая)
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLQWD1NTQdI_XdE-nu1CTIphVC17tL1KK-pGYmdIt6fO52VV-OV8UVCtD2OSimLI0UwQ/exec';
+
+  // --- МАСКА ТЕЛЕФОНА ---
+  const phoneInput = document.getElementById('phoneInput');
+  phoneInput.addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, '');
+    if (!value.startsWith('7') && value.length > 0) {
+        value = '7' + value;
+    }
+    let formatted = '';
+    if (value.length > 0) {
+        formatted = '+7 ';
+        if (value.length > 1) {
+            formatted += '(' + value.substring(1, 4);
+        }
+        if (value.length >= 4) {
+            formatted += ') ' + value.substring(4, 7);
+        }
+        if (value.length >= 7) {
+            formatted += '-' + value.substring(7, 9);
+        }
+        if (value.length >= 9) {
+            formatted += '-' + value.substring(9, 11);
+        }
+    }
+    this.value = formatted;
+  });
+
+  // --- КАСТОМНЫЕ РАДИО И ЧЕКБОКСЫ ---
+  document.querySelectorAll('.radio-group').forEach(group => {
+    group.querySelectorAll('.radio-label').forEach(label => {
+      label.addEventListener('click', (e) => {
+        e.preventDefault();
+        group.querySelectorAll('.radio-label').forEach(l => l.classList.remove('selected'));
+        label.classList.add('selected');
+        label.querySelector('input').checked = true;
+        updateProgress();
+      });
+    });
+  });
+
+  document.querySelectorAll('.checkbox-group').forEach(group => {
+    group.querySelectorAll('.checkbox-label').forEach(label => {
+      label.addEventListener('click', (e) => {
+        e.preventDefault();
+        label.classList.toggle('selected');
+        label.querySelector('input').checked = label.classList.contains('selected');
+        updateProgress();
+      });
+    });
+  });
+
+  // --- ПРОГРЕСС-БАР ---
+  const fields = ['fio','dob','phone','address','debt_amount','income'];
+  const radioGroups = ['procedure','employed','overdue','arrests','family','transactions','ip'];
+
+  function updateProgress() {
+    let filled = 0, total = fields.length + radioGroups.length;
+    fields.forEach(n => { if(document.querySelector(`[name="${n}"]`)?.value.trim()) filled++; });
+    radioGroups.forEach(n => { if(document.querySelector(`[name="${n}"]:checked`)) filled++; });
+    const pct = Math.round((filled / total) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    const labels = ['Начало заполнения','Заполняем данные','Почти готово','Финальный шаг'];
+    document.getElementById('progress-label').textContent = labels[Math.min(3, Math.floor(pct/25))];
+  }
+
+  document.querySelectorAll('.field-input').forEach(i => i.addEventListener('input', updateProgress));
+
+  // --- СБОР ДАННЫХ И ОТПРАВКА (ЧЕРЕЗ FormData) ---
+  function collectData() {
+    const f = document.getElementById('mainForm');
+    const get = n => f.querySelector(`[name="${n}"]`)?.value || '';
+    const getRadio = n => f.querySelector(`[name="${n}"]:checked`)?.value || '';
+    const getChecks = n => [...f.querySelectorAll(`[data-name="${n}"] input:checked`)].map(i=>i.value).join(', ');
+    
+    const data = {
+      'Дата и время': new Date().toLocaleString('ru-RU'),
+      'ФИО': get('fio'), 'Дата рождения': get('dob'), 'Место рождения': get('pob'),
+      'Серия и номер паспорта': get('passport_num'), 'Дата выдачи паспорта': get('passport_date'),
+      'Код подразделения': get('passport_code'), 'Телефон': get('phone'),
+      'Адрес регистрации': get('address'), 'Вид процедуры': getRadio('procedure'),
+      'Работает официально': getRadio('employed'), 'Сумма дохода (в месяц)': get('income'),
+      'Сумма долга': get('debt_amount'), 'Ежемесячный платёж': get('monthly_payment'),
+      'Просрочки': getRadio('overdue'), 'Кредиторы': getChecks('creditors'),
+      'Аресты / исполнительные производства': getRadio('arrests'),
+      'Семейное положение': getRadio('family'), 'Дети': getChecks('children'),
+      'Имущество': getChecks('property'), 'Сделки с имуществом за 3 года': getRadio('transactions'),
+      'Действующее ИП': getRadio('ip'),
+    };
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
+    return formData;
+  }
+
+  document.getElementById('mainForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    const btnArrow = document.getElementById('btnArrow');
+    
+    btn.disabled = true; 
+    spinner.style.display = 'block';
+    btnText.textContent = 'Отправляем...'; 
+    btnArrow.style.display = 'none';
+    
+    try {
+      const payload = collectData(); 
+      await fetch(SCRIPT_URL, { 
+          method:'POST', 
+          mode:'no-cors', 
+          body: payload 
+      });
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      document.getElementById('successScreen').scrollIntoView({ behavior:'smooth' });
+    } catch(err) {
+      btn.disabled = false; 
+      spinner.style.display = 'none';
+      btnText.textContent = 'Отправить заявку'; 
+      btnArrow.style.display = 'block';
+      alert('Ошибка отправки. Проверьте соединение и попробуйте снова.');
+    }
+  });
+</script>
+</body>
+</html>
